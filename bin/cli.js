@@ -30,7 +30,7 @@ ${colors.cyan}${colors.bold}  ___        _   _                     _ _          
 |  _  | | | | |_| | (_| | | | (_| |\\ V /| | |_| |_| || || |_| | |___  |  _ < | | | |___ 
 |_| |_|_| |_|\\__|_|\\__, |_|  \\__,_| \\_/ |_|\\__|\\__, |___|____/|_____| |_| \\_\\|_| |_____|
                    |___/                       |___/                                    ${colors.reset}
-${colors.dim}  Universal RTL & Vazirmatn Font Patcher for Antigravity IDE (Linux / macOS / Windows)${colors.reset}
+${colors.dim}  Universal RTL & Vazirmatn Font Patcher for Antigravity IDE (Pure CSS - Zero CPU Overhead)${colors.reset}
 `);
 }
 
@@ -58,7 +58,6 @@ function findAppPath(customPath) {
     if (customPath) {
         let resolved = path.resolve(customPath);
         if (fs.existsSync(resolved)) {
-            // Check if user passed root install dir instead of resources/app
             if (fs.existsSync(path.join(resolved, 'resources', 'app'))) {
                 return path.join(resolved, 'resources', 'app');
             }
@@ -166,7 +165,7 @@ async function main() {
 
     // Check status
     const htmlContent = fs.readFileSync(workbenchHtml, 'utf8');
-    const isPatched = htmlContent.includes('antigravity-chat-rtl.js') || 
+    const isPatched = htmlContent.includes('antigravity-chat-rtl.css') || 
                       (fs.existsSync(workbenchCss) && fs.readFileSync(workbenchCss, 'utf8').includes('ANTIGRAVITY-IDE RTL'));
 
     if (checkStatus) {
@@ -195,7 +194,6 @@ async function main() {
             fs.unlinkSync(htmlBak);
             console.log(`  ${colors.green}✔ Restored workbench.html${colors.reset}`);
         } else {
-            // Clean up lines from workbench.html manually
             let cleanHtml = htmlContent
                 .replace(/\n\t<link rel="stylesheet" href="\.\.\/\.\.\/\.\.\/workbench\/antigravity-chat-rtl\.css">/g, '')
                 .replace(/\n<script src="\.\.\/\.\.\/\.\.\/workbench\/antigravity-chat-rtl\.js" type="module"><\/script>/g, '');
@@ -207,6 +205,14 @@ async function main() {
             fs.copyFileSync(cssBak, workbenchCss);
             fs.unlinkSync(cssBak);
             console.log(`  ${colors.green}✔ Restored workbench.desktop.main.css${colors.reset}`);
+        } else {
+            let cleanCss = fs.readFileSync(workbenchCss, 'utf8');
+            const marker = '/* === ANTIGRAVITY-IDE RTL';
+            if (cleanCss.includes(marker)) {
+                cleanCss = cleanCss.split(marker)[0].trim();
+                fs.writeFileSync(workbenchCss, cleanCss, 'utf8');
+                console.log(`  ${colors.green}✔ Cleaned up workbench.desktop.main.css${colors.reset}`);
+            }
         }
 
         // Clean up injected assets
@@ -222,13 +228,6 @@ async function main() {
         return;
     }
 
-    // PATCH FLOW
-    if (isPatched) {
-        console.log(`\n${colors.green}✔ Antigravity IDE is already patched!${colors.reset}`);
-        console.log(`${colors.dim}To reinstall or update, run with --restore first, or restart the IDE if updated.${colors.reset}\n`);
-        return;
-    }
-
     // Check permissions
     if (!canWrite(workbenchHtml) || !canWrite(workbenchCss) || !canWrite(workbenchDir)) {
         console.error(`\n${colors.red}✖ Permission denied to modify ${appPath}${colors.reset}`);
@@ -236,7 +235,7 @@ async function main() {
         process.exit(1);
     }
 
-    console.log(`\n${colors.cyan}⚙ Applying RTL and Vazirmatn patches...${colors.reset}`);
+    console.log(`\n${colors.cyan}⚙ Applying pure-CSS RTL and Vazirmatn patches (Zero CPU overhead)...${colors.reset}`);
 
     // 1. Backups
     const htmlBak = workbenchHtml + '.bak';
@@ -253,49 +252,53 @@ async function main() {
     // 2. Copy Assets
     const fontSrc = path.join(ASSETS_DIR, 'Vazirmatn-Variable.woff2');
     const cssSrc = path.join(ASSETS_DIR, 'antigravity-chat-rtl.css');
-    const jsSrc = path.join(ASSETS_DIR, 'antigravity-chat-rtl.js');
 
     const fontDest = path.join(workbenchDir, 'Vazirmatn-Variable.woff2');
     const cssDest = path.join(workbenchDir, 'antigravity-chat-rtl.css');
-    const jsDest = path.join(workbenchDir, 'antigravity-chat-rtl.js');
 
     fs.copyFileSync(fontSrc, fontDest);
     fs.copyFileSync(cssSrc, cssDest);
-    fs.copyFileSync(jsSrc, jsDest);
-    console.log(`  ${colors.green}✔ Copied Vazirmatn-Variable font, CSS and JS scripts${colors.reset}`);
 
-    // 3. Inject into workbench.html
+    // Clean up any legacy js file that caused lag in older versions
+    const jsDest = path.join(workbenchDir, 'antigravity-chat-rtl.js');
+    if (fs.existsSync(jsDest)) {
+        fs.unlinkSync(jsDest);
+    }
+
+    console.log(`  ${colors.green}✔ Installed Vazirmatn-Variable font and pure-CSS stylesheet${colors.reset}`);
+
+    // 3. Inject into workbench.html (pure CSS, no JS!)
     let newHtml = htmlContent;
+    // Clean up legacy JS script tag if present
+    newHtml = newHtml.replace(/\n<script src="\.\.\/\.\.\/\.\.\/workbench\/antigravity-chat-rtl\.js" type="module"><\/script>/g, '');
+    newHtml = newHtml.replace('<script src="../../../workbench/antigravity-chat-rtl.js" type="module"></script>', '');
+
     if (!newHtml.includes('antigravity-chat-rtl.css')) {
         newHtml = newHtml.replace(
             '<link rel="stylesheet" href="../../../workbench/workbench.desktop.main.css">',
             '<link rel="stylesheet" href="../../../workbench/workbench.desktop.main.css">\n\t<link rel="stylesheet" href="../../../workbench/antigravity-chat-rtl.css">'
         );
     }
-    if (!newHtml.includes('antigravity-chat-rtl.js')) {
-        newHtml = newHtml.replace(
-            '<script src="./workbench.js" type="module"></script>',
-            '<script src="./workbench.js" type="module"></script>\n<script src="../../../workbench/antigravity-chat-rtl.js" type="module"></script>'
-        );
-    }
     fs.writeFileSync(workbenchHtml, newHtml, 'utf8');
-    console.log(`  ${colors.green}✔ Injected script and styles into workbench.html${colors.reset}`);
+    console.log(`  ${colors.green}✔ Injected stylesheet link into workbench.html${colors.reset}`);
 
-    // 4. Append to workbench.desktop.main.css as redundancy
-    const cssContent = fs.readFileSync(workbenchCss, 'utf8');
-    if (!cssContent.includes('ANTIGRAVITY-IDE RTL')) {
-        const rtlCss = fs.readFileSync(cssSrc, 'utf8');
-        fs.writeFileSync(workbenchCss, cssContent + '\n\n' + rtlCss, 'utf8');
-        console.log(`  ${colors.green}✔ Appended styles to workbench.desktop.main.css${colors.reset}`);
+    // 4. Update workbench.desktop.main.css
+    let cssContent = fs.readFileSync(workbenchCss, 'utf8');
+    const marker = '/* === ANTIGRAVITY-IDE RTL';
+    if (cssContent.includes(marker)) {
+        cssContent = cssContent.split(marker)[0].trim();
     }
+    const rtlCss = fs.readFileSync(cssSrc, 'utf8');
+    fs.writeFileSync(workbenchCss, cssContent + '\n\n' + rtlCss, 'utf8');
+    console.log(`  ${colors.green}✔ Appended styles to workbench.desktop.main.css${colors.reset}`);
 
     console.log(`
-${colors.green}${colors.bold}✨ Antigravity IDE RTL patch successfully applied!${colors.reset}
+${colors.green}${colors.bold}✨ Antigravity IDE RTL patch successfully applied! (Ultra-lightweight, 0% CPU overhead)${colors.reset}
 
 ${colors.bold}Next Steps:${colors.reset}
 1. In Antigravity IDE, press ${colors.cyan}Ctrl + Shift + P${colors.reset}
 2. Run: ${colors.cyan}Developer: Reload Window${colors.reset} (or restart the IDE)
-3. Enjoy smooth RTL text, Vazirmatn Persian typography, and the toggle button!
+3. Enjoy smooth, buttery-fast native RTL rendering!
 `);
 }
 

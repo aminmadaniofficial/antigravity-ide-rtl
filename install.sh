@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-# Antigravity IDE RTL Installer Script
+# Antigravity IDE RTL Installer Script (Pure CSS, Zero-Overhead)
 # Author: Amin Madani (https://aminmadani.xyz)
 
 CYAN='\033[0;36m'
@@ -10,7 +10,7 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${CYAN}=== Antigravity IDE RTL Installer ===${NC}"
+echo -e "${CYAN}=== Antigravity IDE RTL Installer (Pure CSS) ===${NC}"
 
 # Locate Antigravity IDE
 POSSIBLE_PATHS=(
@@ -57,7 +57,6 @@ if [ ! -d "$ASSETS_DIR" ]; then
     echo -e "Downloading latest assets from GitHub..."
     curl -fsSL "https://raw.githubusercontent.com/aminmadaniofficial/antigravity-ide-rtl/main/assets/Vazirmatn-Variable.woff2" -o "$TEMP_DIR/Vazirmatn-Variable.woff2"
     curl -fsSL "https://raw.githubusercontent.com/aminmadaniofficial/antigravity-ide-rtl/main/assets/antigravity-chat-rtl.css" -o "$TEMP_DIR/antigravity-chat-rtl.css"
-    curl -fsSL "https://raw.githubusercontent.com/aminmadaniofficial/antigravity-ide-rtl/main/assets/antigravity-chat-rtl.js" -o "$TEMP_DIR/antigravity-chat-rtl.js"
     ASSETS_DIR="$TEMP_DIR"
 fi
 
@@ -68,15 +67,13 @@ fi
 # 2. Copy files
 cp -f "$ASSETS_DIR/Vazirmatn-Variable.woff2" "$WORKBENCH_DIR/"
 cp -f "$ASSETS_DIR/antigravity-chat-rtl.css" "$WORKBENCH_DIR/"
-cp -f "$ASSETS_DIR/antigravity-chat-rtl.js" "$WORKBENCH_DIR/"
+# Remove legacy js if present
+rm -f "$WORKBENCH_DIR/antigravity-chat-rtl.js"
 
 # 3. Patch workbench.html
+sed -i '/antigravity-chat-rtl.js/d' "$HTML_FILE"
 if ! grep -q "antigravity-chat-rtl.css" "$HTML_FILE"; then
     sed -i '/workbench.desktop.main.css/a \	<link rel="stylesheet" href="../../../workbench/antigravity-chat-rtl.css">' "$HTML_FILE"
-fi
-
-if ! grep -q "antigravity-chat-rtl.js" "$HTML_FILE"; then
-    sed -i '/workbench.js/a <script src="../../../workbench/antigravity-chat-rtl.js" type="module"></script>' "$HTML_FILE"
 fi
 
 # 4. Patch workbench.desktop.main.css
@@ -84,5 +81,5 @@ if ! grep -q "ANTIGRAVITY-IDE RTL" "$CSS_FILE"; then
     cat "$ASSETS_DIR/antigravity-chat-rtl.css" >> "$CSS_FILE"
 fi
 
-echo -e "${GREEN}✨ Antigravity IDE RTL patch successfully applied!${NC}"
-echo -e "Reload your Antigravity IDE window (Ctrl+Shift+P -> Developer: Reload Window) to enjoy native RTL."
+echo -e "${GREEN}✨ Antigravity IDE RTL patch successfully applied! (Zero CPU Overhead)${NC}"
+echo -e "Reload your Antigravity IDE window (Ctrl+Shift+P -> Developer: Reload Window)."
