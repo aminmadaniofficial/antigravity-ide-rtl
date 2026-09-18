@@ -22,6 +22,17 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Publish package
-        run: npm publish --access public
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current package version: $CURRENT_VERSION"
+          
+          # Check if this version is already published on npm
+          PUBLISHED_VERSIONS=$(npm view antigravity-ide-rtl versions --json 2>/dev/null || echo "[]")
+          if echo "$PUBLISHED_VERSIONS" | grep -q "\"$CURRENT_VERSION\""; then
+            echo "✔ Version $CURRENT_VERSION is already published to NPM. Skipping publish to avoid 409 conflict."
+          else
+            echo "Publishing version $CURRENT_VERSION to NPM..."
+            npm publish --access public
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
