@@ -1,0 +1,114 @@
+/* === ANTIGRAVITY-IDE RTL & VAZIRMATN STYLING === */
+
+@font-face {
+    font-family: 'Vazirmatn';
+    src: url('./Vazirmatn-Variable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+/* Base font assignment for chat panels and assistant responses */
+.antigravity-agent-side-panel,
+.interactive-session,
+.chat-widget,
+.interactive-input-part {
+    font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+}
+
+/* ==========================================
+   Toggle button in Chat Header
+   ========================================== */
+#antigravity-rtl-toggle-btn {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    padding: 3px 8px !important;
+    margin-right: 6px !important;
+    border-radius: 6px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    user-select: none !important;
+}
+
+#antigravity-rtl-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #fff !important;
+}
+
+#antigravity-rtl-toggle-btn.antigravity-rtl-active {
+    background: rgba(0, 240, 255, 0.15) !important;
+    color: #00F0FF !important;
+    border-color: rgba(0, 240, 255, 0.4) !important;
+}
+
+/* ==========================================
+   Auto RTL Mode & Dynamic Plaintext Bi-Direction
+   ========================================== */
+.antigravity-agent-side-panel p,
+.antigravity-agent-side-panel li,
+.antigravity-agent-side-panel blockquote,
+.antigravity-agent-side-panel h1,
+.antigravity-agent-side-panel h2,
+.antigravity-agent-side-panel h3,
+.antigravity-agent-side-panel h4,
+.antigravity-agent-side-panel .markdown-body p,
+.antigravity-agent-side-panel .whitespace-pre-wrap {
+    unicode-bidi: plaintext !important;
+    text-align: start !important;
+    line-height: 1.7 !important;
+}
+
+/* Explicit RTL class assigned by MutationObserver */
+.antigravity-is-rtl,
+[dir="rtl"] {
+    direction: rtl !important;
+    text-align: right !important;
+}
+
+/* Chat user input textarea */
+.antigravity-agent-side-panel textarea[dir="rtl"],
+.antigravity-agent-side-panel [contenteditable="true"][dir="rtl"] {
+    direction: rtl !important;
+    text-align: right !important;
+    font-family: 'Vazirmatn', sans-serif !important;
+}
+
+/* ==========================================
+   Strict LTR Protection (Code, Tables, Editors)
+   ========================================== */
+.antigravity-agent-side-panel pre,
+.antigravity-agent-side-panel code,
+.antigravity-agent-side-panel pre *,
+.antigravity-agent-side-panel code *,
+.antigravity-agent-side-panel table,
+.antigravity-agent-side-panel table *,
+.antigravity-agent-side-panel .interactive-result-code-block,
+.antigravity-agent-side-panel .code-block-container,
+.antigravity-agent-side-panel [data-testid="code-block"],
+.monaco-editor,
+.monaco-editor * {
+    direction: ltr !important;
+    text-align: left !important;
+    unicode-bidi: isolate !important;
+    font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, Menlo, Monaco, Consolas, monospace !important;
+}
+
+/* ==========================================
+   RTL List Padding Fix
+   ========================================== */
+ul[dir="rtl"], ol[dir="rtl"],
+[dir="rtl"] ul, [dir="rtl"] ol,
+.antigravity-is-rtl ul, .antigravity-is-rtl ol {
+    padding-left: 0 !important;
+    padding-right: 1.4rem !important;
+}
+
+/* === END OF ANTIGRAVITY-IDE RTL STYLING === */

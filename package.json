@@ -1,0 +1,40 @@
+{
+  "name": "antigravity-ide-rtl",
+  "version": "1.0.0",
+  "description": "Smart RTL (Right-to-Left) and Vazirmatn Persian typography patcher for Google Antigravity IDE",
+  "type": "module",
+  "main": "bin/cli.js",
+  "bin": {
+    "antigravity-ide-rtl": "bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "assets",
+    "README.md",
+    "LICENSE",
+    "install.sh"
+  ],
+  "keywords": [
+    "antigravity",
+    "antigravity-ide",
+    "rtl",
+    "persian",
+    "arabic",
+    "vazirmatn",
+    "patcher",
+    "vscode"
+  ],
+  "author": "Amin Madani (https://aminmadani.xyz)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aminmadaniofficial/antigravity-ide-rtl.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aminmadaniofficial/antigravity-ide-rtl/issues"
+  },
+  "homepage": "https://github.com/aminmadaniofficial/antigravity-ide-rtl#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
