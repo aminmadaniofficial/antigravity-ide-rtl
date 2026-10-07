@@ -149,3 +149,6 @@ npx antigravity-ide-rtl --restore
 
 Distributed under the [MIT License](LICENSE).  
 Created with ❤️ by **[Amin Madani](https://aminmadani.xyz)**.
+
+
+<!-- Security scan triggered at 2026-10-07 11:40:32 -->
